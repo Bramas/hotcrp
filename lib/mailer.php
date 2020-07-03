@@ -134,7 +134,16 @@ class MailPreparation {
                 fwrite(STDERR, "========================================\n" . str_replace("\r\n", "\n", $text) .  "========================================\n");
             }
         }
-
+	if(!$sent)
+	{
+		unset($headers["mime-version"], $headers["content-type"], $headers["content-transfer-encoding"]);
+	        $text = join("", $headers) . $eol . $this->body;
+		$txt = "========================================\n".
+			"to: ".$to."   (".((new DateTime())->format(DateTime::ATOM)).")\n\n".
+			str_replace("\r\n", "\n", $text).
+			"========================================\n";
+		file_put_contents('/var/log/mail.log', $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
+	}
         return $sent;
     }
 }
